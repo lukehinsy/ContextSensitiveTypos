@@ -1,10 +1,10 @@
 library(dplyr)
 
 wordlist<-df %>% select(text) %>%
-  mutate(text=tm::removePunctuation(text,preserve_intra_word_contractions=TRUE)) %>%
+  dplyr::mutate(text=tm::removePunctuation(text,preserve_intra_word_contractions=TRUE)) %>%
   tidytext::unnest_tokens(word, text, token="words",to_lower=TRUE, strip_punct=FALSE, strip_numeric=TRUE) %>%
   dplyr::count(word, sort=TRUE) %>%
-  select(word)
+  dplyr::select(word)
 
 wordlist$correct<-hunspell::hunspell_check(toupper(wordlist$word))
 correctwords<-wordlist %>% filter(correct=TRUE)
