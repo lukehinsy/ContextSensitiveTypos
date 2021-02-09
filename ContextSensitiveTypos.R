@@ -1,6 +1,6 @@
 library(dplyr)
 
-wordlist<-text %>%
+wordlist<-df %>% select(text) %>%
   mutate(text=tm::removePunctuation(text,preserve_intra_word_contractions=TRUE)) %>%
   tidytext::unnest_tokens(word, text, token="words",to_lower=TRUE, strip_punct=FALSE, strip_numeric=TRUE) %>%
   dplyr::count(word, sort=TRUE) %>%
@@ -16,4 +16,6 @@ misspellings$sugg<-unlist(lapply(misspellings$word, correct))    ## THIS IS INCR
 misspellings <- misspelings %>% select(word, sugg)
 return(misspellings)
   ## Currently returning just the typos and top suggestion. Can use that df as a dictionary to grepl fix. 
-    # Might, however, want to change this behavior.
+    # Might, however, want to change this behavior.remote
+
+test<-source('https://raw.githubusercontent.com/lukehinsy/ContextSensitiveTypos/main/ContextSensitiveTypos.R')
