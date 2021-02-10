@@ -1,6 +1,12 @@
 
 
-function(df, text) {
+FixTypos<-function(df, text) {
+  # Required packages #
+  require(dplyr)
+  require(tm)
+  require(tidytext)
+  require(hunspell)
+  
 wordlist<-df %>% select(text) %>%
   dplyr::mutate(text=tm::removePunctuation(text,preserve_intra_word_contractions=TRUE)) %>%
   tidytext::unnest_tokens(word, text, token="words",to_lower=TRUE, strip_punct=FALSE, strip_numeric=TRUE) %>%
