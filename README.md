@@ -9,9 +9,33 @@ The Norvig solution looks for the most commonly-occuring near-match for within a
 
 Instead of referencing an external word base & distribution, this function uses hunspell to FIRST identify non-words in the provided dataset, then search for good replacements among hunspell-approved words in that dataset. If no good replacement is found among the hunspell-approved words, then the original (misspelled) word is returned. 
 
-Relies on:
-  dplyr
-  tidytext
-  tm
-  hunspell
+### Relies on:
+* dplyr
+* tidytext
+* tm
+* hunspell
 
+### Current shortcomings or known bugs:
+* Probably better to test reversing ie to ei / ei to ie before subbing words. e.g., recieve is getting subbed with believe instead of receive. 
+* "Words" containing numbers are NOT working. Probably worth just ignoring anything with a number; they will inherently be too unique to use a probabilistic replacement anyway.
+* solo punctuation is (1) showing up, which should not be happening, and (2) being replaced with "I".
+* Custom dictionary is definitely required. Examples follow
+	+ ajero
+	+ safeco / geico / safelite
+	+ hvac
+	+ hagerty
+	+ mixup
+	+ sportage (and other car names)
+	+ vin
+	+ dmv
+	+ idk
+	+ aarp
+	+ smartride
+	+ smartmiles
+	+ ...
+
+#### Working on a word-splitter (SplitWords()), for when words are concatenated. 
+	For the sake of saving on memory / process time, that MUST come after typo correction, as it's a potentially-intense process of splitting every string at every character and checking against dictionary.
+	
+  
+  

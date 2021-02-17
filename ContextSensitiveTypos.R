@@ -1,4 +1,4 @@
-
+testdata<-read.csv(choose.files())
 
 FixTypos<-function(df, text) {
   # Required packages #
@@ -7,8 +7,6 @@ FixTypos<-function(df, text) {
   require(tidytext)
   require(hunspell)
 	
-#   df<-cemdata.trim
-# 	df<-df %>% rename(text=q1a)
  
 	wordlist<-df %>% select({{text}}) %>%
   dplyr::mutate(text=tm::removePunctuation({{text}},preserve_intra_word_contractions=TRUE)) %>%
@@ -26,7 +24,37 @@ misspellings$sugg<-unlist(lapply(misspellings$word, correct))    ## THIS IS INCR
 misspellings <- misspellings %>% select(word, sugg)
 return(misspellings)
   ## Currently returning just the typos and top suggestion. Can use that df as a dictionary to grepl fix. 
-    # Might, however, want to change this behavior.remote
+    # Might, however, want to change this behavior.
 }
 
 # test<-FixTypos(cemdata.trim,q1a)
+testingsplit<-FixTypos(testdata,Q1A)
+
+
+#### Splitting concat words ####
+#
+# 1. Read in "misspellings", specifically those whose original was returned as suggested.
+# 2. Among those, split at each letter and check those 2 words. IF both are words, and that's the only row that is 2 words, keep it. 
+# 3. If multiple rows tend to be marked as keepers, or non-keepers are being kept, then may need to incorporate a word "Score" based on ranking in the original database, as used in FixTypos(). Might need to anyway, because it's gonna be a little foolish to program under the assumption that it'll be fine...
+#
+#
+
+SplitWords <-function(inp) { 
+	inp_nchar<-nchar(inp)
+	inp_breaklist<-data.frame("n"=1:inp_nchar,
+														"source.word"=rep(inp,inp_nchar))
+	
+	inp_breaklist$word1<-substr(inp_breaklist$source.word,start=0,stop=inp_breaklist$n)
+	inp_breaklist$word2<-substr(inp_breaklist$source.word,start=inp_breaklist$n+1,inp_nchar)
+	
+	selected<-inp_breaklist[hunspell::hunspell_check(toupper(inp_breaklist$word1))==TRUE & hunspell::hunspell_check(toupper(inp_breaklist$word2))==TRUE,]
+	# return(selected)
+	# Try scoring the words... 
+	
+	}
+	
+  
+		
+		
+
+			
