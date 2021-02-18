@@ -47,31 +47,42 @@ SplitWords <-function(inp) {   ### will assume it gets just a list of words
 	inp_breaklist$word1<-substr(inp_breaklist$source.word,start=0,stop=inp_breaklist$n)
 	inp_breaklist$word2<-substr(inp_breaklist$source.word,start=inp_breaklist$n+1,inp_nchar)
 	
-	selected<-inp_breaklist[hunspell::hunspell_check(toupper(inp_breaklist$word1))==TRUE & hunspell::hunspell_check(toupper(inp_breaklist$word2))==TRUE,] %>%
-		
-	dplyr::left_join(rename(wordlist,count.1=n), by=c("word1"="word")) %>% 
-	dplyr::left_join(rename(wordlist,count.2=n), by=c("word2"="word")) %>%
-	mutate(lncount.1=log(count.1),
-				 lncount.2=log(count.2)) %>%
-	replace(is.na(.),0)  %>% 
-	mutate(Score=rowMeans(select(.,lncount.1,lncount.2)), sugg=paste(word1,word2,sep=" ")) %>%
-	filter(Score==max(Score)) %>%
-	select(sugg)
-return(as.character(selected))
+	selected<-inp_breaklist[hunspell::hunspell_check(toupper(inp_breaklist$word1))==TRUE & hunspell::hunspell_check(toupper(inp_breaklist$word2))==TRUE,] 
+	if (nrow(selected) >0) {
+		selected<- selected %>%
+			dplyr::left_join(rename(wordlist,count.1=n), by=c("word1"="word")) %>% 
+			dplyr::left_join(rename(wordlist,count.2=n), by=c("word2"="word")) %>%
+			mutate(lncount.1=log(count.1),
+						 lncount.2=log(count.2)) %>%
+			replace(is.na(.),0)  %>% 
+			mutate(Score=rowMeans(select(.,lncount.1,lncount.2)), sugg=paste(word1,word2,sep=" ")) %>%
+			filter(Score==max(Score) | is.na(Score)) %>%
+			select(sugg) 
+	}  else {
+		selected<-data.frame(sugg=inp)
+	}
+return(selected$sugg[1])
 	}
 
+test<-lapply(c("testthis","anotherone","a"),SplitWords)
 
-test<-unlist(lapply(c("testthis","anotherone"),SplitWords))
-testdf<-data.frame(word=c("testthis","anotherone"))	
-unlist(lapply(testdf$word,SplitWords))
-testdf$sugg<-unlist(lapply(testdf$word,SplitWords))
+testdf<-data.frame(word=c("testthis","anotherone","a"))	
+
+testsplit<-FixTypos(testdata,Q1A)
+testsplit<-subset(testsplit,word==sugg)
+
+testsplit$sugg2<-(unlist(lapply(testsplit$word,SplitWords)))
 testdf
 
 
 
+testdf<-FixTypos(testdata,Q1A)
+testdfsplitting<-subset(testdf,word==sugg)
+testdfsplitting$sugg2<-unlist(lapply(testdfsplitting$word,SplitWords))
 
 
-## Build ordered wordlist	
+
+
 
 wordlist<-testdata %>% select(Q1A) %>%
 	  dplyr::mutate(text=tm::removePunctuation(Q1A,preserve_intra_word_contractions=TRUE)) %>%
@@ -79,29 +90,30 @@ wordlist<-testdata %>% select(Q1A) %>%
 	  dplyr::count(word, sort=TRUE)
 
 
+
 	
 	
 #### Working single-word with pre-loaded WORDLIST being preserved below, while working on dataframe version ####
-SplitWords <-function(inp) {   ### Currently works for singular argument, and with WORDLIST pre-loaded. 
-	inp_nchar<-nchar(inp)
-	inp_breaklist<-data.frame("n"=1:inp_nchar,
-														"source.word"=rep(inp,inp_nchar))
-	
-	inp_breaklist$word1<-substr(inp_breaklist$source.word,start=0,stop=inp_breaklist$n)
-	inp_breaklist$word2<-substr(inp_breaklist$source.word,start=inp_breaklist$n+1,inp_nchar)
-	
-	selected<-inp_breaklist[hunspell::hunspell_check(toupper(inp_breaklist$word1))==TRUE & hunspell::hunspell_check(toupper(inp_breaklist$word2))==TRUE,] %>%
-		
-	dplyr::left_join(rename(wordlist,count.1=n), by=c("word1"="word")) %>% 
-	dplyr::left_join(rename(wordlist,count.2=n), by=c("word2"="word")) %>%
-	mutate(lncount.1=log(count.1),
-				 lncount.2=log(count.2)) %>%
-	replace(is.na(.),0)  %>% 
-	mutate(Score=rowMeans(select(.,lncount.1,lncount.2)), sugg=paste(word1,word2,sep=" ")) %>%
-	filter(Score==max(Score)) %>%
-	select(word=source.word,sugg) 
-return(selected)
-	}
+# SplitWords <-function(inp) {   ### Currently works for singular argument, and with WORDLIST pre-loaded. 
+# 	inp_nchar<-nchar(inp)
+# 	inp_breaklist<-data.frame("n"=1:inp_nchar,
+# 														"source.word"=rep(inp,inp_nchar))
+# 	
+# 	inp_breaklist$word1<-substr(inp_breaklist$source.word,start=0,stop=inp_breaklist$n)
+# 	inp_breaklist$word2<-substr(inp_breaklist$source.word,start=inp_breaklist$n+1,inp_nchar)
+# 	
+# 	selected<-inp_breaklist[hunspell::hunspell_check(toupper(inp_breaklist$word1))==TRUE & hunspell::hunspell_check(toupper(inp_breaklist$word2))==TRUE,] %>%
+# 		
+# 	dplyr::left_join(rename(wordlist,count.1=n), by=c("word1"="word")) %>% 
+# 	dplyr::left_join(rename(wordlist,count.2=n), by=c("word2"="word")) %>%
+# 	mutate(lncount.1=log(count.1),
+# 				 lncount.2=log(count.2)) %>%
+# 	replace(is.na(.),0)  %>% 
+# 	mutate(Score=rowMeans(select(.,lncount.1,lncount.2)), sugg=paste(word1,word2,sep=" ")) %>%
+# 	filter(Score==max(Score)) %>%
+# 	select(word=source.word,sugg) 
+# return(selected)
+# 	}
 #### End preserved working single-arg version ####
 	
 	
