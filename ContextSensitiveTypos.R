@@ -18,7 +18,7 @@ wordlist$correct<-hunspell::hunspell_check(toupper(wordlist$word))
 correctwords<-wordlist %>% filter(correct==TRUE)
 misspellings<-wordlist %>% filter(correct==FALSE)
 
-correct <-function(word) {c(correctwords[adist(word, correctwords$word) <= min(adist(word, correctwords$word), 2)], word)[1]}
+correct <-function(word) {c(correctwords$word[adist(word, correctwords$word) <= min(adist(word, correctwords$word), 2)], word)[1]}
 
 misspellings$sugg<-unlist(lapply(misspellings$word, correct))    ## THIS IS INCREDIBLY SLOW!
 misspellings <- misspellings %>% select(word, sugg)
