@@ -1,4 +1,4 @@
-testdata<-read.csv(choose.files())
+# testdata<-read.csv(choose.files())
 
 FixTypos<-function(df, text) {
   # Required packages #
@@ -64,3 +64,10 @@ return(RecTable)
   ## Currently returning just the typos and top suggestion. Can use that df as a dictionary to grepl fix. 
     # Might, however, want to change this behavior.
 }
+
+
+
+
+
+# df$fixed<-gsub(paste0("\\b",word,"\\b"),sugg,df$raw)
+
