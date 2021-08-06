@@ -53,7 +53,10 @@ possconcat$split<-(unlist(lapply(possconcat$word,SplitWords)))
 RecTable<-misspellings %>% left_join(possconcat)
 RecTable$sugg[RecTable$word==RecTable$sugg]<-RecTable$split[RecTable$word==RecTable$sugg]
 RecTable$sugg[RecTable$sugg=="i"]<-RecTable$word[RecTable$sugg=="i"]
-RecTable<-RecTable %>% select(-split)
+if("split" %in% colnames(RecTable)){
+  RecTable<-RecTable %>% select(-split)
+}
+
 
 # if (fix=TRUE) {
 #		return(GREPL ORIGINAL COLUMN)
