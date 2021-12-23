@@ -41,20 +41,15 @@ This function is not yet optimized for external/independent use, but can easily 
 * "Words" containing numbers are not working super well. Probably worth just ignoring anything with a number; they will inherently be too unique to use a probabilistic replacement anyway. Right now, they're being split so number/text come out separately. The text suffix isn't helpful, though, so again--prob best to just drop.
 * solo punctuation is (1) showing up, which should not be happening, and (2) being replaced with "I". Currently, just ignoring any "i" suggestions. 
 * Custom dictionary is DEFINITELY required. Examples follow
-	+ ajero
 	+ maybe "autopay"
-	+ safeco / geico / safelite
 	+ hvac
-	+ hagerty
 	+ mixup
-	+ sportage (and other car names)
 	+ vin
 	+ dmv
 	+ idk
 	+ aarp
-	+ smartride
-	+ smartmiles
 	+ i'm
+	+ Generally, proper names--particularly orgs or specific product names
 	+ ...
 
   
